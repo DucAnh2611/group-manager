@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(
     cors({
         origin: process.env.CLIENT_HOST.split(" "),
-        methods: ["GET", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+        methods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
     })
 );
 
