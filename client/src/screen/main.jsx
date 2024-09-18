@@ -67,12 +67,12 @@ export default function MainScreen() {
                 <div className="w-full flex-1 overflow-y-auto flex flex-col gap-2">
                     {members.map((member) => (
                         <div key={member._id}>
-                            <Drawer>
-                                <DrawerTrigger asChild>
-                                    <Card
-                                        className="p-3 flex w-full"
-                                        onClick={() => setMember(member)}
-                                    >
+                            <Card
+                                className="p-3 flex w-full"
+                                onClick={() => setMember(member)}
+                            >
+                                <Drawer>
+                                    <DrawerTrigger asChild>
                                         <div className="flex items-center flex-1">
                                             <p className="w-[30px] text-base font-bold text-primary text-center">
                                                 {member.point}
@@ -94,52 +94,54 @@ export default function MainScreen() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                            <DialogUpdateMember
-                                                member={member}
-                                                trigger={
-                                                    <Button size="icon">
-                                                        <PencilLine size={15} />
-                                                    </Button>
-                                                }
-                                            />
-                                            <DialogDeleteMember
-                                                member={member}
-                                                trigger={
-                                                    <Button
-                                                        size="icon"
-                                                        variant="destructive"
-                                                    >
-                                                        <Trash size={15} />
-                                                    </Button>
-                                                }
-                                            />
+                                    </DrawerTrigger>
+                                    <DrawerContent className="h-full flex flex-col">
+                                        <DrawerHeader>
+                                            <DrawerTitle>
+                                                Lịch sử điểm
+                                            </DrawerTitle>
+                                            <DrawerDescription>
+                                                Lịch sử diểm của{" "}
+                                                {member && member.name}
+                                            </DrawerDescription>
+                                        </DrawerHeader>
+                                        <div className="flex-1 w-full overflow-hidden">
+                                            <MemberHistory />
                                         </div>
-                                    </Card>
-                                </DrawerTrigger>
-                                <DrawerContent className="h-full flex flex-col">
-                                    <DrawerHeader>
-                                        <DrawerTitle>Lịch sử điểm</DrawerTitle>
-                                        <DrawerDescription>
-                                            Lịch sử diểm của{" "}
-                                            {member && member.name}
-                                        </DrawerDescription>
-                                    </DrawerHeader>
-                                    <div className="flex-1 w-full overflow-hidden">
-                                        <MemberHistory />
-                                    </div>
-                                    <DrawerFooter>
-                                        <DrawerClose>
-                                            <Button
-                                                variant="outline"
-                                                className="w-full"
-                                            >
-                                                Thoát
+                                        <DrawerFooter>
+                                            <DrawerClose>
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full"
+                                                >
+                                                    Thoát
+                                                </Button>
+                                            </DrawerClose>
+                                        </DrawerFooter>
+                                    </DrawerContent>
+                                </Drawer>
+                                <div className="flex gap-2">
+                                    <DialogUpdateMember
+                                        member={member}
+                                        trigger={
+                                            <Button size="icon">
+                                                <PencilLine size={15} />
                                             </Button>
-                                        </DrawerClose>
-                                    </DrawerFooter>
-                                </DrawerContent>
-                            </Drawer>
+                                        }
+                                    />
+                                    <DialogDeleteMember
+                                        member={member}
+                                        trigger={
+                                            <Button
+                                                size="icon"
+                                                variant="destructive"
+                                            >
+                                                <Trash size={15} />
+                                            </Button>
+                                        }
+                                    />
+                                </div>
+                            </Card>
                         </div>
                     ))}
                 </div>
