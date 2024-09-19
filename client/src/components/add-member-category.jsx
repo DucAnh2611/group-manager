@@ -38,7 +38,7 @@ export default function DialogAddMemberCategory({ trigger }) {
     const onSelectMember = (member) => {
         SetSelectMember(member);
         SetSelectCategoriesMinus([]);
-        SetSelectCategoriesPlus([])
+        SetSelectCategoriesPlus([]);
     };
 
     const onCreateCategory = (type) => (category) => {

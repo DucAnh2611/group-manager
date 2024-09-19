@@ -74,8 +74,8 @@ export default function MainScreen() {
                                 <Drawer>
                                     <DrawerTrigger asChild>
                                         <div className="flex items-center flex-1">
-                                            <p className="w-[30px] text-base font-bold text-primary text-center">
-                                                {member.point}
+                                            <p className="w-[40px] text-base font-bold text-primary text-center overflow-hidden">
+                                                {member.point.toFixed(2)}
                                             </p>
                                             <Separator
                                                 orientation="vertical"

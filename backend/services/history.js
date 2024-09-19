@@ -132,7 +132,7 @@ const exportXlsx = async () => {
     sumary.addRows(
         members.map((mem) => ({
             name: mem.name,
-            point: mem.point,
+            point: mem.point.toFixed(2),
             type: MEMBER_TYPE_TEXT[mem.type],
         }))
     );
