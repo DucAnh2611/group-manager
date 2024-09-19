@@ -14,7 +14,7 @@ function authenticateJWT(req, res, next) {
         res.otp = otp;
         next();
     } catch (error) {
-        res.sendStatus(403);
+        res.status(401).json({ success: false, message: "INVALID_TOKEN" });
     }
 }
 

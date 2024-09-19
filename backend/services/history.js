@@ -141,8 +141,6 @@ const exportXlsx = async () => {
         const memberSheet = workbook.addWorksheet(mem.name);
         memberSheet.columns = historyColumns;
 
-        console.log(mem.histories);
-
         memberSheet.addRows(
             mem.histories.map((history) => ({
                 pointName: history.pointName,
