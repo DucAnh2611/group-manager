@@ -16,7 +16,9 @@ HistoryRouter.get("/export-xlsx", async (req, res) => {
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
+    res.setHeader(
+        `Content-Disposition", "attachment; filename=data_${new Date().toLocaleString()}.xlsx`
+    );
 
     workbook.xlsx.write(res).then(() => {
         res.end();
