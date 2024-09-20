@@ -17,12 +17,11 @@ HistoryRouter.get("/export-xlsx", async (req, res) => {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
     res.setHeader(
-        `Content-Disposition", "attachment; filename=data_${new Date()
+        "Content-Disposition",
+        `attachment; filename=data_[${new Date()
             .toLocaleString()
             .replaceAll(" ", "")
-            .replaceAll(",", "_")
-            .replaceAll("/", "_")
-            .replaceAll(":", "_")}.xlsx`
+            .replaceAll(",", "_")}].xlsx`
     );
 
     workbook.xlsx.write(res).then(() => {
