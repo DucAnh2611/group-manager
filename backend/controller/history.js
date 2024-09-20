@@ -18,10 +18,10 @@ HistoryRouter.get("/export-xlsx", async (req, res) => {
     );
     res.setHeader(
         "Content-Disposition",
-        `attachment; filename="data_[${new Date()
+        `attachment; filename=diem_ren_luyen_[${new Date()
             .toLocaleString()
             .replaceAll(" ", "")
-            .replaceAll(",", "_")}].xlsx"`
+            .replaceAll(",", "_")}].xlsx`
     );
 
     workbook.xlsx.write(res).then(() => {
