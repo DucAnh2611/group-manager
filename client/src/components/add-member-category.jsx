@@ -2,7 +2,7 @@ import { addHistory } from "@/api/action/history";
 import { POINT_TYPE } from "@/constant/category";
 import useMember from "@/hooks/useMember";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { LoaderCircleIcon, TrashIcon } from "lucide-react";
+import { LoaderCircleIcon, Minus, Plus, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import AddCategory from "./add-category";
 import DialogSelectMember from "./select-member";
@@ -17,6 +17,7 @@ import {
     DialogTrigger,
 } from "./ui/dialog";
 import { Label } from "./ui/label";
+import { Separator } from "./ui/separator";
 
 export default function DialogAddMemberCategory({ trigger }) {
     const { reload } = useMember();
@@ -44,13 +45,28 @@ export default function DialogAddMemberCategory({ trigger }) {
     };
 
     const onCreateCategory = (type) => (category) => {
-        console.log(type, category);
         switch (type) {
             case POINT_TYPE.ADD:
-                SetSelectCategoriesPlus((i) => [...i, category]);
+                SetSelectCategoriesPlus((i) =>
+                    !i.find((c) => c.code === category.code)
+                        ? [...i, category]
+                        : i.map((c) => ({
+                              ...c,
+                              ...category,
+                              quantity: c.quantity + category.quantity,
+                          }))
+                );
                 break;
             case POINT_TYPE.MINUS:
-                SetSelectCategoriesMinus((i) => [...i, category]);
+                SetSelectCategoriesMinus((i) =>
+                    !i.find((c) => c.code === category.code)
+                        ? [...i, category]
+                        : i.map((c) => ({
+                              ...c,
+                              ...category,
+                              quantity: c.quantity + category.quantity,
+                          }))
+                );
                 break;
             default:
                 return;
@@ -74,13 +90,56 @@ export default function DialogAddMemberCategory({ trigger }) {
         }
     };
 
+    const updateCategoryQuantity = (type, category, quantity) => () => {
+        switch (type) {
+            case POINT_TYPE.ADD:
+                SetSelectCategoriesPlus((i) =>
+                    i.map((it) => ({
+                        ...it,
+                        quantity:
+                            it.code === category.code
+                                ? it.quantity + quantity || 1
+                                : it.quantity,
+                    }))
+                );
+                break;
+            case POINT_TYPE.MINUS:
+                SetSelectCategoriesMinus((i) =>
+                    i.map((it) => ({
+                        ...it,
+                        quantity:
+                            it.code === category.code
+                                ? it.quantity + quantity || 1
+                                : it.quantity,
+                    }))
+                );
+                break;
+            default:
+                return;
+        }
+    };
+
     const onSubmit = async () => {
         if (!selectMember || loading) return;
 
         SetLoading(true);
 
+        const historyList = [...selectCategoriesMinus, ...selectCategoriesPlus];
+        const histories = historyList.reduce((acc, curr) => {
+            const { quantity, ...h } = curr;
+            const items = [];
+
+            for (let i = 0; i < quantity; i++) {
+                items.push(h);
+            }
+
+            return [...acc, ...items];
+        }, []);
+
+        console.log(histories);
+
         const res = await addHistory(selectMember._id, {
-            histories: [...selectCategoriesMinus, ...selectCategoriesPlus],
+            histories: histories,
         });
         if (res.success) {
             onOpen(false);
@@ -128,15 +187,49 @@ export default function DialogAddMemberCategory({ trigger }) {
                                     {selectCategoriesPlus.map((c) => (
                                         <div key={c.code}>
                                             <Card className="p-2 flex gap-2 w-full">
-                                                <Button
-                                                    variant="destructive"
-                                                    onClick={removeCategory(
-                                                        POINT_TYPE.ADD,
-                                                        c
-                                                    )}
-                                                >
-                                                    <TrashIcon size={15} /> Xóa
-                                                </Button>
+                                                <div className="flex flex-col gap-1">
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={removeCategory(
+                                                            POINT_TYPE.ADD,
+                                                            c
+                                                        )}
+                                                        className="flex-1 gap-1"
+                                                    >
+                                                        <TrashIcon size={15} />{" "}
+                                                        Xóa
+                                                    </Button>
+                                                    <div className="h-fit flex gap-1">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            disabled={
+                                                                c.quantity === 1
+                                                            }
+                                                            onClick={updateCategoryQuantity(
+                                                                POINT_TYPE.ADD,
+                                                                c,
+                                                                -1
+                                                            )}
+                                                        >
+                                                            <Minus size={15} />
+                                                        </Button>
+                                                        <Button
+                                                            size="icon"
+                                                            onClick={updateCategoryQuantity(
+                                                                POINT_TYPE.ADD,
+                                                                c,
+                                                                1
+                                                            )}
+                                                        >
+                                                            <Plus size={15} />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <Separator
+                                                    className="w-[0.5px] h-auto"
+                                                    orientation="horizontal"
+                                                />
                                                 <div className="flex-1 text-sm">
                                                     <p className="flex-1">
                                                         <span className="font-medium mr-1">
@@ -170,6 +263,13 @@ export default function DialogAddMemberCategory({ trigger }) {
                                                         </span>
                                                     </p>
                                                 </div>
+                                                <Separator
+                                                    className="w-[0.5px] h-auto"
+                                                    orientation="horizontal"
+                                                />
+                                                <div className="w-fit px-2 flex items-center text-xs">
+                                                    <p>SL: {c.quantity}</p>
+                                                </div>
                                             </Card>
                                         </div>
                                     ))}
@@ -193,15 +293,50 @@ export default function DialogAddMemberCategory({ trigger }) {
                                     {selectCategoriesMinus.map((c) => (
                                         <div key={c.code}>
                                             <Card className="p-2 flex gap-2 w-full">
-                                                <Button
-                                                    variant="destructive"
-                                                    onClick={removeCategory(
-                                                        POINT_TYPE.MINUS,
-                                                        c
-                                                    )}
-                                                >
-                                                    <TrashIcon size={15} /> Xóa
-                                                </Button>
+                                                <div className="flex flex-col gap-1">
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={removeCategory(
+                                                            POINT_TYPE.MINUS,
+                                                            c
+                                                        )}
+                                                        className="flex-1 gap-1"
+                                                    >
+                                                        <TrashIcon size={15} />{" "}
+                                                        Xóa
+                                                    </Button>
+                                                    <div className="h-fit flex gap-1">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            disabled={
+                                                                c.quantity === 1
+                                                            }
+                                                            onClick={updateCategoryQuantity(
+                                                                POINT_TYPE.MINUS,
+                                                                c,
+                                                                -1
+                                                            )}
+                                                        >
+                                                            <Minus size={15} />
+                                                        </Button>
+                                                        <Button
+                                                            size="icon"
+                                                            onClick={updateCategoryQuantity(
+                                                                POINT_TYPE.MINUS,
+                                                                c,
+                                                                1
+                                                            )}
+                                                        >
+                                                            <Plus size={15} />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                <Separator
+                                                    className="w-[0.5px] h-auto"
+                                                    orientation="horizontal"
+                                                />
                                                 <div className="flex-1 text-sm">
                                                     <p className="flex-1">
                                                         <span className="font-medium mr-1">
@@ -234,6 +369,14 @@ export default function DialogAddMemberCategory({ trigger }) {
                                                                 "Không có"}
                                                         </span>
                                                     </p>
+                                                </div>
+
+                                                <Separator
+                                                    className="w-[0.5px] h-auto"
+                                                    orientation="horizontal"
+                                                />
+                                                <div className="w-fit px-2 flex items-center text-xs">
+                                                    <p>SL: {c.quantity}</p>
                                                 </div>
                                             </Card>
                                         </div>

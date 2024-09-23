@@ -32,6 +32,17 @@ export default function AddCategory({ onCreate, trigger, member, type }) {
         SetValue((v) => ({ ...v, notes: e.target.value }));
     };
 
+    const onChangeQuantity = (e) => {
+        let quan = parseInt(e.target.value) || 0;
+
+        if (quan < 0) {
+            quan = 1;
+        }
+
+        SetValue((v) => ({ ...v, quantity: quan }));
+        e.target.value = quan;
+    };
+
     const onSelectCategory = (category) => {
         if (category) {
             SetValue({
@@ -43,6 +54,7 @@ export default function AddCategory({ onCreate, trigger, member, type }) {
                 behavior: category.behavior || "",
                 type: type,
                 tags: category.tags,
+                quantity: 1,
             });
         } else {
             SetValue(null);
@@ -82,8 +94,8 @@ export default function AddCategory({ onCreate, trigger, member, type }) {
                     </div>
                     {value && (
                         <div>
-                            <div>
-                                <p className="text-sm">
+                            <div className="text-muted-foreground">
+                                <p className="text-xs">
                                     <span className="mr-2 font-medium">
                                         Điểm:
                                     </span>
@@ -91,14 +103,14 @@ export default function AddCategory({ onCreate, trigger, member, type }) {
                                     {value.point}/{value.pointUnit}
                                 </p>
                                 {value.behavior && (
-                                    <p className="text-sm">
+                                    <p className="text-xs">
                                         <span className="mr-2 font-medium">
                                             Hạnh kiểm:
                                         </span>
                                         {value.behavior}
                                     </p>
                                 )}
-                                <p className="text-sm">
+                                <p className="text-xs">
                                     <span className="mr-2 font-medium">
                                         Áp dụng:
                                     </span>
@@ -109,12 +121,29 @@ export default function AddCategory({ onCreate, trigger, member, type }) {
                                         : "Tất cả"}
                                 </p>
                             </div>
+                            <div className="mt-2">
+                                <Label>Số lượng</Label>
+                                <Input
+                                    placeholder="Số lượng"
+                                    type="number"
+                                    value={value.quantity}
+                                    onChange={onChangeQuantity}
+                                />
+                            </div>
+                            <div>
+                                <Label>Ghi chú</Label>
+                                <Input
+                                    placeholder="Ghi chú"
+                                    value={value.note}
+                                    onChange={onChangeNote}
+                                />
+                            </div>
+                            <p className="text-xs italic text-muted-foreground">
+                                *Ghi chú sẽ áp dụng cho tất cả số lượng danh
+                                mục.
+                            </p>
                         </div>
                     )}
-                    <div>
-                        <Label>Ghi chú</Label>
-                        <Input placeholder="Ghi chú" onChange={onChangeNote} />
-                    </div>
                 </div>
                 <DialogFooter>
                     <div className="w-full flex gap-2 justify-end">
@@ -126,7 +155,12 @@ export default function AddCategory({ onCreate, trigger, member, type }) {
                         >
                             Huỷ
                         </Button>
-                        <Button onClick={onConfirm}>Xác nhận</Button>
+                        <Button
+                            onClick={onConfirm}
+                            disabled={!value || (value && value.quantity < 1)}
+                        >
+                            Xác nhận
+                        </Button>
                     </div>
                 </DialogFooter>
             </DialogContent>
