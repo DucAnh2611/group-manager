@@ -8,19 +8,18 @@ const getPointStage = (point) => {
 
     for (const st of Object.entries(stages)) {
         const [key, { from, to }] = st;
-
         if (!from && to) {
             if (point < to) {
                 return POINT_STAGE_TAG[key];
             }
-        } else if (!to && from) {
+        }
+        if (!to && from) {
             if (point >= from) {
                 return POINT_STAGE_TAG[key];
             }
-        } else {
-            if (from <= point && point < to) {
-                return POINT_STAGE_TAG[key];
-            }
+        }
+        if (from <= point && point < to) {
+            return POINT_STAGE_TAG[key];
         }
     }
 

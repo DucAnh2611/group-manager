@@ -1,7 +1,6 @@
 const POINT_STAGE = {
     GOOD: {
         from: 25,
-        to: -1,
     },
     NICE: {
         from: 20,
@@ -12,7 +11,6 @@ const POINT_STAGE = {
         to: 20,
     },
     UN_QUALIFIED: {
-        from: -1,
         to: 15,
     },
 };
