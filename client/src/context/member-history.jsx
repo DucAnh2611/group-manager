@@ -22,6 +22,7 @@ export default function MemberHistoryProvider({ children }) {
 
     const setMember = (member) => {
         SetMember(member);
+        SetPage(1);
     };
     const getMemberHistory = async (member, page, limit) => {
         SetIsLoading(true);

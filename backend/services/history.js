@@ -3,6 +3,8 @@ const { MEMBER_TYPE_TEXT } = require("../constant/member.constant");
 const HistoryModel = require("../db/models/history");
 const MemberModel = require("../db/models/members");
 const ExcelJS = require("exceljs");
+const { getPointStage } = require("../utils/get-point-stage");
+const { POINT_STAGE_TEXT } = require("../constant/point-stage.constant");
 
 const memberHistory = async (page, limit, memberId) => {
     const items = await HistoryModel.find({
@@ -88,6 +90,11 @@ const exportXlsx = async () => {
             width: 10,
         },
         {
+            header: "Xếp hạng",
+            key: "rating",
+            width: 10,
+        },
+        {
             header: "Chức vụ",
             key: "type",
             width: 20,
@@ -134,6 +141,7 @@ const exportXlsx = async () => {
             name: mem.name,
             point: mem.point.toFixed(2),
             type: MEMBER_TYPE_TEXT[mem.type],
+            rating: POINT_STAGE_TEXT[getPointStage(mem.point)],
         }))
     );
 

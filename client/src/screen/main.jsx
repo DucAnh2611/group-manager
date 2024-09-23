@@ -17,13 +17,15 @@ import {
 } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
 import DialogUpdateMember from "@/components/update-member";
+import { POINT_STAGE_TEXT } from "@/constant/category";
 import { MEMBER_TYPE_TEXT } from "@/constant/member";
 import useMember from "@/hooks/useMember";
 import useMemberHistory from "@/hooks/useMemberHistory";
-import { PencilLine, Trash } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { LoaderCircleIcon, PencilLine, Trash } from "lucide-react";
 
 export default function MainScreen() {
-    const { members } = useMember();
+    const { members, isLoading } = useMember();
     const { setMember } = useMemberHistory();
 
     const handleExportXlsx = async () => {
@@ -64,7 +66,20 @@ export default function MainScreen() {
                     </Button>
                 </div>
                 <Separator orientation="horizontal" className="my-3" />
-                <div className="w-full flex-1 overflow-y-auto flex flex-col gap-2">
+                <div className="w-full flex-1 overflow-y-auto flex flex-col gap-2 relative">
+                    {isLoading && (
+                        <div className="w-full h-full absolute left-0 top-0 flex items-center justify-center backdrop-blur-sm bg-gray-500 bg-opacity-15">
+                            <div className="flex gap-1 items-center">
+                                <span>
+                                    <LoaderCircleIcon
+                                        size={15}
+                                        className="animate-spin"
+                                    />
+                                </span>
+                                <span>Đang tải</span>
+                            </div>
+                        </div>
+                    )}
                     {members.map((member) => (
                         <div key={member._id}>
                             <Card
@@ -75,7 +90,7 @@ export default function MainScreen() {
                                     <DrawerTrigger asChild>
                                         <div className="flex items-center flex-1">
                                             <p className="w-[40px] text-base font-bold text-primary text-center overflow-hidden">
-                                                {member.point.toFixed(2)}
+                                                {member.point.toFixed(1)}
                                             </p>
                                             <Separator
                                                 orientation="vertical"
@@ -89,6 +104,31 @@ export default function MainScreen() {
                                                         ]
                                                     }
                                                 </p>
+                                                <p className="text-xs font-medium text-primary">
+                                                    <span
+                                                        className={cn(
+                                                            member.stage ===
+                                                                "GOOD" &&
+                                                                "text-green-500",
+                                                            member.stage ===
+                                                                "NICE" &&
+                                                                "text-blue-500",
+                                                            member.stage ===
+                                                                "QUALIFIED" &&
+                                                                "text-yellow-500",
+                                                            member.stage ===
+                                                                "UN_QUALIFIED" &&
+                                                                "text-red-500",
+                                                            "font-medium"
+                                                        )}
+                                                    >
+                                                        {
+                                                            POINT_STAGE_TEXT[
+                                                                member.stage
+                                                            ]
+                                                        }
+                                                    </span>
+                                                </p>
                                                 <p className="text-sm">
                                                     {member.name}
                                                 </p>
@@ -101,7 +141,7 @@ export default function MainScreen() {
                                                 Lịch sử điểm
                                             </DrawerTitle>
                                             <DrawerDescription>
-                                                Lịch sử diểm của{" "}
+                                                Lịch sử điểm của{" "}
                                                 {member && member.name}
                                             </DrawerDescription>
                                         </DrawerHeader>
@@ -120,7 +160,7 @@ export default function MainScreen() {
                                         </DrawerFooter>
                                     </DrawerContent>
                                 </Drawer>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <DialogUpdateMember
                                         member={member}
                                         trigger={

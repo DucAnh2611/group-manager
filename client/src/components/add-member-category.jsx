@@ -2,7 +2,7 @@ import { addHistory } from "@/api/action/history";
 import { POINT_TYPE } from "@/constant/category";
 import useMember from "@/hooks/useMember";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { TrashIcon } from "lucide-react";
+import { LoaderCircleIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import AddCategory from "./add-category";
 import DialogSelectMember from "./select-member";
@@ -22,6 +22,7 @@ export default function DialogAddMemberCategory({ trigger }) {
     const { reload } = useMember();
 
     const [open, SetOpen] = useState(false);
+    const [loading, SetLoading] = useState(false);
     const [selectMember, SetSelectMember] = useState(null);
     const [selectCategoriesPlus, SetSelectCategoriesPlus] = useState([]);
     const [selectCategoriesMinus, SetSelectCategoriesMinus] = useState([]);
@@ -31,6 +32,7 @@ export default function DialogAddMemberCategory({ trigger }) {
             SetSelectMember(null);
             SetSelectCategoriesPlus([]);
             SetSelectCategoriesMinus([]);
+            SetLoading(false);
         }
         SetOpen(open);
     };
@@ -73,7 +75,10 @@ export default function DialogAddMemberCategory({ trigger }) {
     };
 
     const onSubmit = async () => {
-        if (!selectMember) return;
+        if (!selectMember || loading) return;
+
+        SetLoading(true);
+
         const res = await addHistory(selectMember._id, {
             histories: [...selectCategoriesMinus, ...selectCategoriesPlus],
         });
@@ -81,6 +86,8 @@ export default function DialogAddMemberCategory({ trigger }) {
             onOpen(false);
             reload();
         }
+
+        SetLoading(false);
     };
 
     return (
@@ -246,7 +253,22 @@ export default function DialogAddMemberCategory({ trigger }) {
                         >
                             Huỷ
                         </Button>
-                        <Button onClick={onSubmit}>Xác nhận</Button>
+                        <Button
+                            onClick={onSubmit}
+                            disabled={
+                                loading ||
+                                (!selectCategoriesMinus.length &&
+                                    !selectCategoriesPlus.length)
+                            }
+                        >
+                            {loading && (
+                                <LoaderCircleIcon
+                                    size={15}
+                                    className="animate-spin mr-1"
+                                />
+                            )}
+                            Xác nhận
+                        </Button>
                     </div>
                 </DialogFooter>
             </DialogContent>

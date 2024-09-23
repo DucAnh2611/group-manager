@@ -1,6 +1,7 @@
 import { addMember } from "@/api/action/member";
 import useMember from "@/hooks/useMember";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { LoaderCircleIcon } from "lucide-react";
 import { useState } from "react";
 import SelectMemberType from "./select-member-type";
 import { Button } from "./ui/button";
@@ -18,6 +19,7 @@ import { Label } from "./ui/label";
 export default function DialogAddMember({ trigger }) {
     const { reload } = useMember();
     const [open, SetOpen] = useState(false);
+    const [loading, SetLoading] = useState(false);
 
     const [name, SetName] = useState("");
     const [type, SetType] = useState("");
@@ -34,16 +36,22 @@ export default function DialogAddMember({ trigger }) {
         if (!open) {
             SetName("");
             SetType("");
+            SetLoading(false);
         }
         SetOpen(open);
     };
 
     const onSubmit = async () => {
+        if (loading) return;
+        SetLoading(true);
+
         const res = await addMember({ members: [{ name, type }] });
         if (res.success) {
             onOpen(false);
             reload();
         }
+
+        SetLoading(false);
     };
 
     return (
@@ -87,8 +95,14 @@ export default function DialogAddMember({ trigger }) {
                         </Button>
                         <Button
                             onClick={onSubmit}
-                            disabled={!(!!name && !!type)}
+                            disabled={!(!!name && !!type) || loading}
                         >
+                            {loading && (
+                                <LoaderCircleIcon
+                                    size={15}
+                                    className="animate-spin mr-1"
+                                />
+                            )}
                             Thêm thành viên
                         </Button>
                     </div>

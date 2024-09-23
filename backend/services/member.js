@@ -1,13 +1,21 @@
 const { MEMBER_TYPE } = require("../constant/member.constant");
 const HistoryModel = require("../db/models/history");
 const MemberModel = require("../db/models/members");
+const { getPointStage } = require("../utils/get-point-stage");
 
 const listMember = async () => {
     const list = await MemberModel.find({});
 
+    const mapProps = list.map((item) => {
+        const additionProps = {
+            stage: getPointStage(item.point),
+        };
+        return { ...item.toObject(), ...additionProps };
+    });
+
     return {
         success: true,
-        data: list,
+        data: mapProps,
     };
 };
 
