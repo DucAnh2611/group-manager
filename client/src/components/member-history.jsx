@@ -2,11 +2,12 @@ import { POINT_TYPE } from "@/constant/category";
 import useMemberHistory from "@/hooks/useMemberHistory";
 import { cn } from "@/lib/utils";
 import { LoaderCircleIcon } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
-export default function MemberHistory() {
-    const { page, limit, count, history, changeQuery, isLoading } =
+export default function MemberHistory({ member }) {
+    const { page, limit, count, history, changeQuery, isLoading, setMember } =
         useMemberHistory();
 
     const handlePrev = () => {
@@ -16,6 +17,10 @@ export default function MemberHistory() {
     const handleNext = () => {
         changeQuery(page + 1, limit);
     };
+
+    useEffect(() => {
+        setMember(member);
+    }, [member]);
 
     return (
         <div className="flex flex-col gap-2 w-full h-full overflow-hidden px-4">

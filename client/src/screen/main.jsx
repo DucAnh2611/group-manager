@@ -20,13 +20,11 @@ import DialogUpdateMember from "@/components/update-member";
 import { POINT_STAGE_TEXT } from "@/constant/category";
 import { MEMBER_TYPE_TEXT } from "@/constant/member";
 import useMember from "@/hooks/useMember";
-import useMemberHistory from "@/hooks/useMemberHistory";
 import { cn } from "@/lib/utils";
 import { LoaderCircleIcon, PencilLine, Trash } from "lucide-react";
 
 export default function MainScreen() {
     const { members, isLoading } = useMember();
-    const { setMember } = useMemberHistory();
 
     const handleExportXlsx = async () => {
         const response = await exportXlsx();
@@ -82,10 +80,7 @@ export default function MainScreen() {
                     )}
                     {members.map((member) => (
                         <div key={member._id}>
-                            <Card
-                                className="p-3 flex w-full"
-                                onClick={() => setMember(member)}
-                            >
+                            <Card className="p-3 flex w-full">
                                 <Drawer>
                                     <DrawerTrigger asChild>
                                         <div className="flex items-center flex-1">
@@ -146,7 +141,7 @@ export default function MainScreen() {
                                             </DrawerDescription>
                                         </DrawerHeader>
                                         <div className="flex-1 w-full overflow-hidden">
-                                            <MemberHistory />
+                                            <MemberHistory member={member} />
                                         </div>
                                         <DrawerFooter>
                                             <DrawerClose>
